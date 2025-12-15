@@ -242,9 +242,9 @@ For each email, return:
 
 | Provider | Models | Best For |
 |----------|--------|----------|
-| **OpenAI** | GPT-4o, o1 | General purpose, vision, image gen |
-| **Anthropic** | Claude 4 | Long context, coding, safety |
-| **Google** | Gemini 2.0 | Multimodal, speed, cost |
+| **OpenAI** | GPT-5.2, o1 | General purpose, vision |
+| **Anthropic** | Claude 4.5 | Long context, coding, safety |
+| **Google** | Gemini 3 | Multimodal, speed, cost |
 | **OpenRouter** | All models | Model switching, fallbacks |
 | **n8n Credits** | (OpenAI) | Free tier, getting started |
 
@@ -300,9 +300,9 @@ For each email, return:
 
 | Direction | Examples |
 |-----------|----------|
-| **Text → Text** | Chat completions (GPT-4o, Claude, Gemini) |
+| **Text → Text** | Chat completions (GPT-5.2, Claude, Gemini) |
 | **Image → Text** | Vision, OCR, describe images |
-| **Text → Image** | DALL-E 3, Imagen, GPT-4o |
+| **Text → Image** | Nano Banana |
 | **Text → Video** | Sora, Veo (limited API access) |
 | **Text ↔ Audio** | Whisper, TTS, voice mode |
 
@@ -310,12 +310,29 @@ For each email, return:
 
 ## Current SOTA Models (2025)
 
-**TEXT:** GPT-4o, Claude 4.5, Gemini 2.0
+- Text: GPT-5.2, Claude 4.5, Gemini 3
+- Images: Nano Banana
+- Video: Sora, Veo
+- Audio: Whisper, GPT-4o voice
 
-**IMAGE GENERATION:** GPT-4o native, DALL-E 3, Imagen 3
+---
 
-**VIDEO:** Sora (OpenAI), Veo 2 (Google)
+## Current SOTA Models (2025)
+**TEXT:** GPT-5.2, Claude 4.5, Gemini 3
 
+---
+
+## Current SOTA Models (2025)
+**IMAGE GENERATION:** Nano Banana (old: Midjourney)
+
+---
+
+## Current SOTA Models (2025)
+**VIDEO:** Sora (OpenAI), Veo (Google)
+
+---
+
+## Current SOTA Models (2025)
 **AUDIO:** Whisper (transcription), GPT-4o voice mode
 
 ⚠️ *This changes fast. Check provider docs.*
@@ -329,7 +346,7 @@ For each email, return:
 **WORKFLOW:**
 1. Previous workflow – Get digest summary
 2. OpenAI – Generate image prompt from summary
-3. OpenAI/Gemini – Generate image
+3. Nano Banana – Generate image
 4. Google Drive – Save to folder
 5. Return URL – For embedding in digest
 
@@ -363,16 +380,29 @@ For each email, return:
 
 ## Running Workflows
 
+- Test Mode: Run each node separately
+- Production Mode: Run all together
+- Partial Execution: Pin data to test downstream
+
+---
+
+## Running Workflows
 **TEST MODE (Run Each Separately)**
 - Click each node to test
 - See data at each step
 - Great for debugging
 
+---
+
+## Running Workflows
 **PRODUCTION MODE (Run All Together)**
 - Execute from trigger
 - Full end-to-end
 - Test before activating!
 
+---
+
+## Running Workflows
 **PARTIAL EXECUTION**
 - Pin data at any node
 - Test downstream without re-fetching
@@ -400,12 +430,23 @@ return [random];
 
 ## What Else Could We Build?
 
+- Slack standup bot, Auto-reply emails
+- Meeting notes → tasks
+- Voice → text → email
+- Screenshot → ticket
+
+---
+
+## What Else Could We Build?
 **WITH WHAT WE LEARNED:**
 - Slack daily standup bot
 - Auto-reply to specific emails
 - Meeting notes → action items → tasks
 - Weekly report generator
 
+---
+
+## What Else Could We Build?
 **COMBINING MODALITIES:**
 - Voice memo → transcribe → summarize → email
 - Screenshot → extract text → create ticket
