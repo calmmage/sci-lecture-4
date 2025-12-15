@@ -23,18 +23,31 @@
 
 ---
 
-## Ways to Start a Workflow
+## Triggers
 
+- Known: Manual, Schedule, Webhook
+- Integrations: Gmail, Sheets, Databases
+- New: Chat trigger, Sub-Workflow
+
+---
+
+## Triggers
 **ALREADY KNOW:**
 - Manual – Click to run (testing, one-off tasks)
 - Schedule – Cron-based (daily at 7am, every hour)
 - Webhook – External HTTP call
 
+---
+
+## Triggers
 **INTEGRATION TRIGGERS:**
 - Email received (Gmail, Outlook)
 - Row added (Sheets, Airtable)
 - Database change (Postgres, MongoDB)
 
+---
+
+## Triggers
 **NEW FOR AI WORKFLOWS:**
 - Execute Workflow – Called from another workflow
 - Chat Trigger – Conversational AI interface
