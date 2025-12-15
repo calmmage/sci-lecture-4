@@ -56,12 +56,22 @@
 
 ## Chat Trigger (n8n Langchain)
 
+- Purpose: Conversational AI without frontend
+- Modes: Hosted Chat / Embedded Widget
+- Features: Sessions, AI Agent, Webhooks
+
+---
+
+## Chat Trigger (n8n Langchain)
 **PURPOSE:** Create conversational AI apps without frontend code
 
 **TWO MODES:**
 1. **Hosted Chat** – n8n provides the UI, you get a URL
 2. **Embedded Widget** – Add to your website/app
 
+---
+
+## Chat Trigger (n8n Langchain)
 **FEATURES:**
 - Session management (remembers conversation)
 - Works with AI Agent node
@@ -73,6 +83,12 @@
 
 ## BUILD → Hello World Workflow
 
+- Goal: Data flow, branching, merging
+- Trigger → Set → IF → Merge
+
+---
+
+## BUILD → Hello World Workflow
 **GOAL:** Understand data flow, branching, merging
 
 **STEPS:**
@@ -82,6 +98,9 @@
 4. Two paths → different transformations
 5. Merge node – combine results
 
+---
+
+## BUILD → Hello World Workflow
 **KEY CONCEPTS:**
 - Items flow through nodes
 - Each node transforms data
@@ -98,12 +117,22 @@
 
 ## Chat API Structure
 
+- System: Persona, rules, context
+- User: The request
+- Assistant: Model's response
+
+---
+
+## Chat API Structure
 | Role | Purpose |
 |------|---------|
 | **System** | Sets persona, rules, context. Persists across conversation. |
 | **User** | The actual request. Can include data from previous nodes. |
 | **Assistant** | Model's response. Becomes input for next nodes. |
 
+---
+
+## Chat API Structure
 **EXAMPLE:**
 ```
 System: "You are a helpful email summarizer. Be concise."
@@ -115,10 +144,20 @@ Assistant: "Here's your summary: ..."
 
 ## Structured Output (JSON Mode)
 
+- Problem: LLM returns unstructured text
+- Solution: Request JSON format
+- Guaranteed valid, parseable output
+
+---
+
+## Structured Output (JSON Mode)
 **THE PROBLEM:**
 > LLM returns: "The priority is high and you should reply soon"
 > You need: `{ "priority": "high", "action": "reply" }`
 
+---
+
+## Structured Output (JSON Mode)
 **THE SOLUTION:**
 - Request JSON format in system prompt
 - Or use OpenAI's `response_format` parameter
@@ -136,6 +175,13 @@ Assistant: "Here's your summary: ..."
 
 ## BUILD → Parse Emails into Summary
 
+- Get emails → Loop → OpenAI summarize
+- System prompt: Priority + Summary + Action
+- Aggregate results
+
+---
+
+## BUILD → Parse Emails into Summary
 **WORKFLOW:**
 1. Manual Trigger (later: Schedule)
 2. Gmail node – Get today's emails
@@ -143,11 +189,14 @@ Assistant: "Here's your summary: ..."
 4. OpenAI node – Summarize with system prompt
 5. Aggregate – Combine all summaries
 
+---
+
+## BUILD → Parse Emails into Summary
 **SYSTEM PROMPT:**
 ```
 You are an email summarizer.
 For each email, return:
-- Priority: urgent/important/fyi  
+- Priority: urgent/important/fyi
 - One-line summary
 - Action needed (if any)
 ```
@@ -175,12 +224,21 @@ For each email, return:
 
 ## BUILD → Parse Calendar into Summary
 
+- Calendar → Format → OpenAI → Summary
+- Output: Readable daily schedule
+
+---
+
+## BUILD → Parse Calendar into Summary
 **WORKFLOW:**
 1. Google Calendar – Get today's events
 2. Code node – Format event list
 3. OpenAI – Generate readable schedule
 4. Set – Structure output
 
+---
+
+## BUILD → Parse Calendar into Summary
 **OUTPUT EXAMPLE:**
 ```
 📅 Today: 4 meetings
@@ -193,6 +251,12 @@ For each email, return:
 
 ## BUILD → Log Summaries to Sheets
 
+- Why: Searchable history, track patterns
+- Summaries → Transform → Append to Sheets
+
+---
+
+## BUILD → Log Summaries to Sheets
 **WHY LOG TO SHEETS?**
 - Searchable history
 - Track patterns over time
@@ -201,6 +265,9 @@ For each email, return:
 **COLUMNS:**
 `Date | Sender | Subject | Summary | Priority | Action`
 
+---
+
+## BUILD → Log Summaries to Sheets
 **WORKFLOW:**
 1. Previous email summaries
 2. Code node – Transform to rows
@@ -210,6 +277,12 @@ For each email, return:
 
 ## BUILD → Daily Digest Document
 
+- Combine: Emails + Calendar + Actions
+- Merge → OpenAI → Google Docs
+
+---
+
+## BUILD → Daily Digest Document
 **COMBINE EVERYTHING:**
 - Email summary + Calendar overview + Action items
 
@@ -218,11 +291,14 @@ For each email, return:
 2. OpenAI – Generate formatted digest
 3. Google Docs – Create/append document
 
+---
+
+## BUILD → Daily Digest Document
 ```markdown
 ## Today's Schedule
 [Calendar summary]
 
-## Email Highlights  
+## Email Highlights
 [Priority emails]
 
 ## Action Items
@@ -252,11 +328,21 @@ For each email, return:
 
 ## Structured Output with JSON Schema
 
+- Guaranteed format, no parsing errors
+- Type validation across providers
+- 💡 Tip: Limit to 3 tasks max
+
+---
+
+## Structured Output with JSON Schema
 **WHY SCHEMAS?**
 - Guaranteed format (no parsing errors)
 - Type validation
 - Works with all major providers
 
+---
+
+## Structured Output with JSON Schema
 ```json
 {
   "tasks": [
@@ -276,6 +362,13 @@ For each email, return:
 
 ## BUILD → Email Tasks to Calendar
 
+- Extract tasks from emails
+- Find free slots → Schedule events
+- ⚠️ Structured output is critical
+
+---
+
+## BUILD → Email Tasks to Calendar
 **THE IDEA:** Emails contain hidden tasks. Extract them, find free time, schedule automatically.
 
 **WORKFLOW:**
@@ -285,6 +378,9 @@ For each email, return:
 4. Google Calendar – Find free slots
 5. Google Calendar – Create events
 
+---
+
+## BUILD → Email Tasks to Calendar
 ⚠️ **Structured output is key** – without it, you can't reliably parse task properties
 
 ---
@@ -341,6 +437,12 @@ For each email, return:
 
 ## BUILD → Image of the Day
 
+- Generate image based on day's theme
+- Digest → Prompt → Nano Banana → Drive
+
+---
+
+## BUILD → Image of the Day
 **THE IDEA:** Based on your day's theme, generate an inspiring image.
 
 **WORKFLOW:**
@@ -350,6 +452,9 @@ For each email, return:
 4. Google Drive – Save to folder
 5. Return URL – For embedding in digest
 
+---
+
+## BUILD → Image of the Day
 **PROMPT:**
 > "Based on today's schedule about [topic], create an image prompt. Style: minimal, professional, inspiring."
 
@@ -412,6 +517,12 @@ For each email, return:
 
 ## BUILD → Pick Random File from Drive
 
+- Use: Random videos, quotes, rotating content
+- List files → Pick random → Download
+
+---
+
+## BUILD → Pick Random File from Drive
 **USE CASES:** Random video, quote image, rotating content
 
 **WORKFLOW:**
@@ -420,6 +531,9 @@ For each email, return:
 3. Google Drive – Download file
 4. Output – Use in next step
 
+---
+
+## BUILD → Pick Random File from Drive
 ```javascript
 const items = $input.all();
 const random = items[Math.floor(Math.random() * items.length)];
