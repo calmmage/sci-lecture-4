@@ -1,3 +1,11 @@
 .idea
 
 node_modules
+
+# AI instruction files (generated)
+CLAUDE.md
+.cursorrules
+GEMINI.md
+AGENTS.md
+WARP.md
+.claude
