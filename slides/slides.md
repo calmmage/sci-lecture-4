@@ -77,7 +77,7 @@
 - Works with AI Agent node
 - Webhook-compatible
 
-📚 `docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/`
+`docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/`
 
 ---
 
@@ -241,10 +241,10 @@ For each email, return:
 ## BUILD → Parse Calendar into Summary
 **OUTPUT EXAMPLE:**
 ```
-📅 Today: 4 meetings
-⚠️ 10am-12pm: Back-to-back
-🍽️ Lunch: 12:30-1:30 (free)
-💡 Prep needed for 3pm client call
+Today: 4 meetings
+10am-12pm: Back-to-back
+Lunch: 12:30-1:30 (free)
+Prep needed for 3pm client call
 ```
 
 ---
@@ -330,7 +330,7 @@ For each email, return:
 
 - Guaranteed format, no parsing errors
 - Type validation across providers
-- 💡 Tip: Limit to 3 tasks max
+- Tip: Limit to 3 tasks max
 
 ---
 
@@ -356,7 +356,7 @@ For each email, return:
 }
 ```
 
-💡 **TIP:** Limit to 3 tasks to avoid calendar overload
+**TIP:** Limit to 3 tasks to avoid calendar overload
 
 ---
 
@@ -364,7 +364,7 @@ For each email, return:
 
 - Extract tasks from emails
 - Find free slots → Schedule events
-- ⚠️ Structured output is critical
+- Structured output is critical
 
 ---
 
@@ -381,7 +381,7 @@ For each email, return:
 ---
 
 ## BUILD → Email Tasks to Calendar
-⚠️ **Structured output is key** – without it, you can't reliably parse task properties
+ **Structured output is key** – without it, you can't reliably parse task properties
 
 ---
 
@@ -431,7 +431,7 @@ For each email, return:
 ## Current SOTA Models (2025)
 **AUDIO:** Whisper (transcription), GPT-4o voice mode
 
-⚠️ *This changes fast. Check provider docs.*
+ *This changes fast. Check provider docs.*
 
 ---
 
@@ -565,14 +565,14 @@ return [random];
 - Voice memo → transcribe → summarize → email
 - Screenshot → extract text → create ticket
 
-💬 **Your turn: What would YOU automate?**
+ **Your turn: What would YOU automate?**
 
 ---
 
 <!-- .slide: data-background="#1d1d1d" -->
 # Questions?
 
-📚 **Resources:**
+ **Resources:**
 - n8n Docs: `docs.n8n.io`
 - OpenAI API: `platform.openai.com`
 - Chat Trigger: `docs.n8n.io/.../chattrigger`
