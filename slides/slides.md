@@ -32,7 +32,7 @@
 ---
 
 ## Triggers
-**ALREADY KNOW:**
+**Already know:**
 - Manual – Click to run (testing, one-off tasks)
 - Schedule – Cron-based (daily at 7am, every hour)
 - Webhook – External HTTP call
@@ -40,7 +40,7 @@
 ---
 
 ## Triggers
-**INTEGRATION TRIGGERS:**
+**Integration triggers:**
 - Email received (Gmail, Outlook)
 - Row added (Sheets, Airtable)
 - Database change (Postgres, MongoDB)
@@ -48,7 +48,7 @@
 ---
 
 ## Triggers
-**NEW FOR AI WORKFLOWS:**
+**New for AI workflows:**
 - Execute Workflow – Called from another workflow
 - Chat Trigger – Conversational AI interface
 
@@ -63,16 +63,16 @@
 ---
 
 ## Chat Trigger (n8n Langchain)
-**PURPOSE:** Create conversational AI apps without frontend code
+**Purpose:** Create conversational AI apps without frontend code
 
-**TWO MODES:**
+**Two modes:**
 1. **Hosted Chat** – n8n provides the UI, you get a URL
 2. **Embedded Widget** – Add to your website/app
 
 ---
 
 ## Chat Trigger (n8n Langchain)
-**FEATURES:**
+**Features:**
 - Session management (remembers conversation)
 - Works with AI Agent node
 - Webhook-compatible
@@ -89,9 +89,9 @@
 ---
 
 ## BUILD → Hello World Workflow
-**GOAL:** Understand data flow, branching, merging
+**Goal:** Understand data flow, branching, merging
 
-**STEPS:**
+**Steps:**
 1. Manual Trigger
 2. Set node – create sample data
 3. IF node – branch based on condition
@@ -101,7 +101,7 @@
 ---
 
 ## BUILD → Hello World Workflow
-**KEY CONCEPTS:**
+**Key concepts:**
 - Items flow through nodes
 - Each node transforms data
 - Branching = parallel paths
@@ -133,7 +133,7 @@
 ---
 
 ## Chat API Structure
-**EXAMPLE:**
+**Example:**
 ```
 System: "You are a helpful email summarizer. Be concise."
 User: "Summarize this email: [content]"
@@ -151,14 +151,14 @@ Assistant: "Here's your summary: ..."
 ---
 
 ## Structured Output (JSON Mode)
-**THE PROBLEM:**
+**The problem:**
 > LLM returns: "The priority is high and you should reply soon"
 > You need: `{ "priority": "high", "action": "reply" }`
 
 ---
 
 ## Structured Output (JSON Mode)
-**THE SOLUTION:**
+**The solution:**
 - Request JSON format in system prompt
 - Or use OpenAI's `response_format` parameter
 - Guaranteed valid JSON, predictable parsing
@@ -182,7 +182,7 @@ Assistant: "Here's your summary: ..."
 ---
 
 ## BUILD → Parse Emails into Summary
-**WORKFLOW:**
+**Workflow:**
 1. Manual Trigger (later: Schedule)
 2. Gmail node – Get today's emails
 3. Loop – Process each email
@@ -192,7 +192,7 @@ Assistant: "Here's your summary: ..."
 ---
 
 ## BUILD → Parse Emails into Summary
-**SYSTEM PROMPT:**
+**System prompt:**
 ```
 You are an email summarizer.
 For each email, return:
@@ -230,7 +230,7 @@ For each email, return:
 ---
 
 ## BUILD → Parse Calendar into Summary
-**WORKFLOW:**
+**Workflow:**
 1. Google Calendar – Get today's events
 2. Code node – Format event list
 3. OpenAI – Generate readable schedule
@@ -239,7 +239,7 @@ For each email, return:
 ---
 
 ## BUILD → Parse Calendar into Summary
-**OUTPUT EXAMPLE:**
+**Output example:**
 ```
 Today: 4 meetings
 10am-12pm: Back-to-back
@@ -257,18 +257,18 @@ Prep needed for 3pm client call
 ---
 
 ## BUILD → Log Summaries to Sheets
-**WHY LOG TO SHEETS?**
+**Why log to sheets?**
 - Searchable history
 - Track patterns over time
 - Data for future automations
 
-**COLUMNS:**
+**Columns:**
 `Date | Sender | Subject | Summary | Priority | Action`
 
 ---
 
 ## BUILD → Log Summaries to Sheets
-**WORKFLOW:**
+**Workflow:**
 1. Previous email summaries
 2. Code node – Transform to rows
 3. Google Sheets – Append rows
@@ -283,10 +283,10 @@ Prep needed for 3pm client call
 ---
 
 ## BUILD → Daily Digest Document
-**COMBINE EVERYTHING:**
+**Combine everything:**
 - Email summary + Calendar overview + Action items
 
-**WORKFLOW:**
+**Workflow:**
 1. Merge node – Combine email + calendar data
 2. OpenAI – Generate formatted digest
 3. Google Docs – Create/append document
@@ -335,7 +335,7 @@ Prep needed for 3pm client call
 ---
 
 ## Structured Output with JSON Schema
-**WHY SCHEMAS?**
+**Why schemas?**
 - Guaranteed format (no parsing errors)
 - Type validation
 - Works with all major providers
@@ -356,7 +356,7 @@ Prep needed for 3pm client call
 }
 ```
 
-**TIP:** Limit to 3 tasks to avoid calendar overload
+**Tip:** Limit to 3 tasks to avoid calendar overload
 
 ---
 
@@ -369,9 +369,9 @@ Prep needed for 3pm client call
 ---
 
 ## BUILD → Email Tasks to Calendar
-**THE IDEA:** Emails contain hidden tasks. Extract them, find free time, schedule automatically.
+**The idea:** Emails contain hidden tasks. Extract them, find free time, schedule automatically.
 
-**WORKFLOW:**
+**Workflow:**
 1. Gmail – Get important unread emails
 2. OpenAI – Extract tasks (structured output!)
 3. Filter – Keep top 3 by priority
@@ -396,40 +396,42 @@ Prep needed for 3pm client call
 
 | Direction | Examples |
 |-----------|----------|
-| **Text → Text** | Chat completions (GPT-5.2, Claude, Gemini) |
+| **Text → Text** | Chat completions (GPT-5.2, Claude 4.5, Gemini 3) |
 | **Image → Text** | Vision, OCR, describe images |
-| **Text → Image** | Nano Banana |
-| **Text → Video** | Sora, Veo (limited API access) |
-| **Text ↔ Audio** | Whisper, TTS, voice mode |
+| **Text → Image** | Gemini Image 3 (Nano Banana Pro), Midjourney |
+| **Text → Video** | Sora, Veo, Runway Gen-4 |
+| **Audio → Text** | Whisper, transcripts, meeting notes |
+| **Text → Audio** | GPT-4o voice, Elevenlabs |
+| **Voice Agents** | Real-time voice assistants |
 
 ---
 
 ## Current SOTA Models (2025)
 
-- Text: GPT-5.2, Claude 4.5, Gemini 3
-- Image Generation: Gemini Image 3 (aka Nano Banana Pro), Midjourney
-- Video generation: Sora, Veo, Runway
-- Audio Agents: Whisper, GPT-4o voice, Elevenlabs
+- **Text:** GPT-5.2 (OpenAI), Claude 4.5 (Anthropic), Gemini 3 (Google)
+- **Image Generation:** Gemini Image 3 (aka Nano Banana Pro), Midjourney
+- **Video:** Sora (OpenAI), Veo (Google), Runway Gen-4
+- **Audio Agents:** Whisper (STT), GPT-4o voice (TTS), Elevenlabs (Voice Cloning)
 
 ---
 
 ## Current SOTA Models (2025)
-**TEXT:** GPT-5.2, Claude 4.5, Gemini 3
+**Text:** GPT-5.2, Claude 4.5, Gemini 3
 
 ---
 
 ## Current SOTA Models (2025)
-**IMAGE GENERATION:** Nano Banana (old: Midjourney)
+**Image generation:** Gemini Image 3 (aka Nano Banana Pro), Midjourney
 
 ---
 
 ## Current SOTA Models (2025)
-**VIDEO:** Sora (OpenAI), Veo (Google)
+**Video:** Sora (OpenAI), Veo (Google), Runway Gen-4
 
 ---
 
 ## Current SOTA Models (2025)
-**AUDIO:** Whisper (transcription), GPT-4o voice mode
+**Audio:** Whisper (transcription), GPT-4o voice mode
 
  *This changes fast. Check provider docs.*
 
@@ -443,9 +445,9 @@ Prep needed for 3pm client call
 ---
 
 ## BUILD → Image of the Day
-**THE IDEA:** Based on your day's theme, generate an inspiring image.
+**The idea:** Based on your day's theme, generate an inspiring image.
 
-**WORKFLOW:**
+**Workflow:**
 1. Previous workflow – Get digest summary
 2. OpenAI – Generate image prompt from summary
 3. Nano Banana – Generate image
@@ -455,7 +457,7 @@ Prep needed for 3pm client call
 ---
 
 ## BUILD → Image of the Day
-**PROMPT:**
+**Prompt:**
 > "Based on today's schedule about [topic], create an image prompt. Style: minimal, professional, inspiring."
 
 ---
@@ -469,17 +471,17 @@ Prep needed for 3pm client call
 
 ## Handling Errors
 
-**ERROR OUTPUT (the red dot)**
+**Error output (the red dot)**
 - Every node has an error output
 - Route failures to: logging, alerts, fallback
 
-**COMMON PATTERN:**
+**Common pattern:**
 ```
 [Node] → success → continue
       → error   → Slack alert + log to Sheets
 ```
 
-**RULE:** Don't let workflows fail silently
+**Rule:** Don't let workflows fail silently
 
 ---
 
@@ -492,7 +494,7 @@ Prep needed for 3pm client call
 ---
 
 ## Running Workflows
-**TEST MODE (Run Each Separately)**
+**Test mode (run each separately)**
 - Click each node to test
 - See data at each step
 - Great for debugging
@@ -500,7 +502,7 @@ Prep needed for 3pm client call
 ---
 
 ## Running Workflows
-**PRODUCTION MODE (Run All Together)**
+**Production mode (run all together)**
 - Execute from trigger
 - Full end-to-end
 - Test before activating!
@@ -508,7 +510,7 @@ Prep needed for 3pm client call
 ---
 
 ## Running Workflows
-**PARTIAL EXECUTION**
+**Partial execution**
 - Pin data at any node
 - Test downstream without re-fetching
 - Saves API calls during development
@@ -523,9 +525,9 @@ Prep needed for 3pm client call
 ---
 
 ## BUILD → Pick Random File from Drive
-**USE CASES:** Random video, quote image, rotating content
+**Use cases:** Random video, quote image, rotating content
 
-**WORKFLOW:**
+**Workflow:**
 1. Google Drive – List files in folder
 2. Code node – Pick random item
 3. Google Drive – Download file
@@ -552,7 +554,7 @@ return [random];
 ---
 
 ## What Else Could We Build?
-**WITH WHAT WE LEARNED:**
+**With what we learned:**
 - Slack daily standup bot
 - Auto-reply to specific emails
 - Meeting notes → action items → tasks
@@ -561,7 +563,7 @@ return [random];
 ---
 
 ## What Else Could We Build?
-**COMBINING MODALITIES:**
+**Combining modalities:**
 - Voice memo → transcribe → summarize → email
 - Screenshot → extract text → create ticket
 
