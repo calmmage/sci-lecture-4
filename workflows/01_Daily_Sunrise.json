@@ -1,0 +1,3367 @@
+{
+  "name": "Daily Sunrise v2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7,
+              "triggerAtMinute": 10
+            }
+          ]
+        }
+      },
+      "id": "f0442157-f021-4bb8-9faa-246a7b79764e",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -7968,
+        -2048
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "GPT-5.1"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "Generate a creative video prompt for an inspiring sunrise scene. The prompt should feature a contrast between a realistically dark space (like a cave, balcony, or airplane seat) from where an optimistic, inspiring sunrise is viewed. Be creative and vary the setting, but maintain the essence of darkness-to-light contrast.\n\nExamples:\n1) Golden sunrise from airplane seat through the illuminator with illuminator borders visible\n2) Golden sunrise from airplane seat through the illuminator with illuminator borders visible, with mountains\n3)  Golden sunrise from airplane seat through the illuminator with illuminator borders visible, over the ocean with gigantic waves\n4) Timelapse of multilane (8+) a car traffic Dubai style and a sunrise, viewed from dark balcony high up\n\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "name": "list_of_ideas",
+              "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"ideas\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"additionalProperties\": false,\n  \"required\": [\"ideas\"]\n}"
+            }
+          }
+        }
+      },
+      "id": "8940c2b0-5f20-423d-aa87-58a425d76532",
+      "name": "Generate Video Prompt",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -6240,
+        -1200
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "24nk4sUD64B0PgZV",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const prompts = $input.first().json.output[0].content[0].text.ideas;\nconst randomIndex = Math.floor(Math.random() * prompts.length);\nreturn [{ json: { prompt: prompts[randomIndex] } }];"
+      },
+      "id": "d72e2807-e235-45d0-83e3-8c45ae7f19b8",
+      "name": "Random Prompt Picker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5680,
+        -1200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendVideo",
+        "chatId": "=291560340",
+        "binaryData": true,
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Watched ✓",
+                    "additionalFields": {
+                      "callback_data": "video_watched"
+                    }
+                  },
+                  {
+                    "text": "One more video!",
+                    "additionalFields": {
+                      "callback_data": "video_more"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "caption": "=Good morning! Here is your inspiring sunrise video 🌅. Watch it and mark when done!\n",
+          "height": "={{ $json.Height }}",
+          "width": "={{ $json.Width }}"
+        }
+      },
+      "id": "198105a9-2ce7-4269-8d3c-3d7f5937818a",
+      "name": "Send Video to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -4224,
+        -752
+      ],
+      "webhookId": "829609f8-1682-4f35-a4b2-b0a4e8624da6",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "=sunrise_{{ $now.format('yyyy-MM-dd') }}.mp4",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Workflow Configuration Daily').first().json.googleDriveFolderId }}"
+        },
+        "options": {}
+      },
+      "id": "2db2564d-71fc-42a4-8c7b-52c2ada46595",
+      "name": "Upload to Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -4912,
+        -1200
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AxotrXnfSlaLQo2z",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.from.id }}",
+        "text": "What is the 1 main priority you will break through today?\n\n🧘 Close your eyes. What feels most important?",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Lost - Listen to myself",
+                    "additionalFields": {
+                      "callback_data": "priority_listen"
+                    }
+                  },
+                  {
+                    "text": "Simple - Think",
+                    "additionalFields": {
+                      "callback_data": "priority_listen"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "💼 Work",
+                    "additionalFields": {
+                      "callback_data": "priority_work"
+                    }
+                  },
+                  {
+                    "text": "💪 Health",
+                    "additionalFields": {
+                      "callback_data": "priority_health"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Overwhelmed - Go with the flow (Plans from Calendar)",
+                    "additionalFields": {
+                      "callback_data": "priority_flow"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "😴 Sleep on time",
+                    "additionalFields": {
+                      "callback_data": "priority_sleep"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "e8ab4f20-51ef-4d4a-b69f-27877eebe656",
+      "name": "Send Priority Menu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -6960,
+        -608
+      ],
+      "webhookId": "2db0daef-0dae-46b1-b81b-bb7114f85e1c",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "video-more",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "video_more",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "More"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "video-watched",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "video_watched",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Watched"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0ea374b3-e713-4221-9fb1-7398e40707c9",
+      "name": "Video Buttons Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -7184,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "listen",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "priority_listen",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Listen"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "work",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "priority_work",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Work"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "sleep",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "priority_sleep",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Sleep"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "health",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "priority_health",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Health"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "flow",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "priority_flow",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Flow"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ed59b51d-9494-4dc3-8038-c74f73336e89",
+      "name": "Priority Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -7184,
+        -176
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "meditate",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "health_meditate",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Meditate"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "exercise",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "health_exercise",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Exercise"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "walk",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "health_walk",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Walk"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "diet",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "health_diet",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Diet"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "66aef04d-4687-4d04-a77b-c809241da713",
+      "name": "Health Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -6960,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.from.id }}",
+        "text": "What do you want to do today? Type your goal:",
+        "replyMarkup": "forceReply",
+        "forceReply": {
+          "force_reply": true
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a0b614bc-ede9-4dad-9311-88f5e1fcd428",
+      "name": "Ask Listen Goal",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -6960,
+        -416
+      ],
+      "webhookId": "8a6a1702-aa4e-4d50-9c8c-934a3403756b",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.from.id }}",
+        "text": "What work task will you accomplish today? Type it:",
+        "replyMarkup": "forceReply",
+        "forceReply": {
+          "force_reply": true
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "ca3c078c-7c9d-4f87-80b9-b3d7ba3a82b9",
+      "name": "Ask Work Goal",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -6960,
+        -224
+      ],
+      "webhookId": "bd769bf5-f16a-49c8-8dc9-6a9a2aaac7f3",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.from.id }}",
+        "text": "What time will you go to sleep? Any prep needed?",
+        "replyMarkup": "forceReply",
+        "forceReply": {
+          "force_reply": true
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "549cde54-27cd-4683-88ea-4f812c185d8f",
+      "name": "Ask Sleep Goal",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -6960,
+        -32
+      ],
+      "webhookId": "8dfb2a07-1792-4695-a99c-7ff6d4a7a95a",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.from.id }}",
+        "text": "Pick your health focus:",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🧘 Meditate",
+                    "additionalFields": {
+                      "callback_data": "health_meditate"
+                    }
+                  },
+                  {
+                    "text": "💪 Exercise",
+                    "additionalFields": {
+                      "callback_data": "health_exercise"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🚶 Walk",
+                    "additionalFields": {
+                      "callback_data": "health_walk"
+                    }
+                  },
+                  {
+                    "text": "🥗 Diet/Fasting",
+                    "additionalFields": {
+                      "callback_data": "health_diet"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "dabfa87c-0a46-4fba-9245-da213ef697de",
+      "name": "Show Health Options",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -6960,
+        160
+      ],
+      "webhookId": "f9a9f0b7-29e5-4050-a072-a7835c5f5fc5",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Convert health callback to goal string\nconst callback = $input.first().json.callback_query.data;\nconst goalMap = {\n  'health_meditate': 'Meditate today',\n  'health_exercise': 'Exercise today',\n  'health_walk': 'Go for a walk today',\n  'health_diet': 'Focus on diet/fasting today'\n};\n\nreturn [{\n  json: {\n    goal: goalMap[callback],\n    chatId: $input.first().json.callback_query.from.id,\n    date: new Date().toISOString().split('T')[0]\n  }\n}];"
+      },
+      "id": "ea4f1bb5-666b-4fad-bd43-0c89174bacea",
+      "name": "Set Health Goal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6672,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Flow = bail out, use default goal. Have lots of plans / events - just follow calendar\nreturn [{\n  json: {\n    goal: 'Have lots of plans / events - just follow calendar',\n    chatId: $input.first().json.callback_query.from.id\n  }\n}];"
+      },
+      "id": "cd5890a6-13b9-4950-a9a8-5bf82e38dd66",
+      "name": "Set Flow Goal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6672,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "modelId": {
+          "__rl": true,
+          "value": "models/veo-3.1-generate-preview",
+          "mode": "list",
+          "cachedResultName": "models/veo-3.1-generate-preview"
+        },
+        "prompt": "={{ $json.prompt }}",
+        "options": {
+          "aspectRatio": "9:16"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -5472,
+        -1008
+      ],
+      "id": "5baa3e1c-f09b-4c3e-8c29-b184a3a6b38d",
+      "name": "Generate a video",
+      "retryOnFail": false,
+      "maxTries": 2,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "nS1PWxkgg6LWw2gO",
+          "name": "Google Gemini(PaLM) Api - petr.b.lavrov"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Determine goal context from reply_to_message\n// const msg = $input.first().json.message;\nconst msg = $json.message;\nconst replyText = msg.reply_to_message?.text || '';\nconst userText = msg.text || '';\nconst chatId = msg.chat.id;\n\nlet goal = userText;\n\n// Add context prefix based on what question was asked\nif (replyText.includes('What do you want to do') || replyText.includes(\"extra priorities\")) {\n  goal = userText; // pure freeform\n} else if (replyText.includes('work task')) {\n  goal = 'Work: ' + userText;\n} else if (replyText.includes('sleep') || replyText.includes('Sleep')) {\n  goal = 'Sleep: ' + userText;\n}\n\n// return [{\n//   json: {\n//     goal: goal,\n//     chatId: chatId,\n//     date: new Date().toISOString().split('T')[0]\n//   }\n// }];\nreturn {\n  json: {\n    goal: goal,\n    chatId: chatId,\n    date: new Date().toISOString().split('T')[0]\n  }\n};"
+      },
+      "id": "fce8427f-b585-47aa-9c68-35e36d2a6e5c",
+      "name": "Build Goal from Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6672,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1SY-WRnRB52axx2pusu9SCpp7l1_wa744A6jM1PUyt2o"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": "gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.date }}",
+            "Goal": "={{ $json.goal }}",
+            "Results": ""
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Goal",
+              "displayName": "Goal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Results",
+              "displayName": "Results",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "id": "856dcee6-8acc-45a0-8957-381d715ee05c",
+      "name": "Save Text Goal to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -6384,
+        448
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kOLlvw1cspFJeDdm",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Build Goal from Text').item.json.chatId }}",
+        "text": "=Saved Goal:\n{{  $('Build Goal from Text').item.json.goal}} \n\nAny extra priorities?",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "e41a681b-b2e6-47ad-ba7e-3c41c486bce3",
+      "name": "Confirm Text Goal",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -5616,
+        464
+      ],
+      "webhookId": "d112d834-73ad-4002-90b8-887c1a563ade",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Flow = bail out, use default goal\nreturn [{\n  json: {\n    goal: 'Go to sleep in time',\n    chatId: $input.first().json.callback_query.from.id\n  }\n}];"
+      },
+      "id": "afa7479f-e09e-4dad-bde2-7fd51244a424",
+      "name": "Set Sleep Goal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6672,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d9c9d08b-260b-4a05-b8bd-68244bccf661",
+              "leftValue": "$json.message.text",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -7184,
+        912
+      ],
+      "id": "5f25ff59-40db-4362-a43e-a0b3763f403c",
+      "name": "Start command"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.callback_query }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    },
+                    "id": "b14371aa-2647-4ff7-8049-6e3e1600a2c7"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Callback"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a230e362-b161-464a-8c11-1002e9bc4999",
+                    "leftValue": "={{ $json.message }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -7632,
+        448
+      ],
+      "id": "6a4187c8-4d8e-49ef-bace-c990e8ba4dd5",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4e35741a-ff91-4a48-a47f-7cf1f42a612e",
+              "leftValue": "={{ $today.day % 2 == 0 }}",
+              "rightValue": "tr",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -6688,
+        -1008
+      ],
+      "id": "fffca440-384c-42b8-8eb8-74a557d7ca82",
+      "name": "If random 50/50"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "GPT-5.1"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Generate a majestic object / setting that can be viewed in a sunrise from the {{ $json.scenarioName }}\n\nExamples:\n1) Golden sunrise from airplane seat through the illuminator with illuminator borders visible\n2) Golden sunrise from airplane seat through the illuminator with illuminator borders visible, with mountains\n3)  Golden sunrise from airplane seat through the illuminator with illuminator borders visible, over the ocean with gigantic waves\n\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_schema",
+              "name": "list_of_ideas",
+              "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"ideas\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    }\n  },\n  \"additionalProperties\": false,\n  \"required\": [\"ideas\"]\n}"
+            }
+          }
+        }
+      },
+      "id": "dfde5715-0a74-4614-85a1-c15ada2d4fad",
+      "name": "Generate Video Prompt - Plane",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -6240,
+        -1008
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "24nk4sUD64B0PgZV",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const prompts = $input.first().json.output[0].content[0].text.ideas;\nconst randomIndex = Math.floor(Math.random() * prompts.length);\nreturn [{ json: { prompt: \"Golden sunrise viewed from \" + $('Random Setting Picker').first().json.scenarioName + \" over \" + prompts[randomIndex] + \" with dark borders visible\"} }];"
+      },
+      "id": "820e1b66-f294-4eab-9f65-5971ae770e82",
+      "name": "Random Item Picker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5888,
+        -1008
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenarios = [\n  { id: 'plane', name: 'Airplane Seat Illuminator' },\n  { id: 'cave', name: 'Mountain Cave' },\n  { id: 'dark_forest', name: 'Dark Forest' },\n];\n\nconst randomIndex = Math.floor(Math.random() * scenarios.length);\nconst selectedScenario = scenarios[randomIndex];\n\nreturn [{\n  json: {\n    scenarioId: selectedScenario.id,\n    scenarioName: selectedScenario.name,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "5fc0a816-ae47-4992-8002-c9bfdb1cbcb3",
+      "name": "Random Setting Picker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6464,
+        -1008
+      ]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query",
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "57cd9b79-a17b-4d4b-95ae-59d45c76a8a1",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -8080,
+        448
+      ],
+      "webhookId": "0070cc19-4309-4b10-b39d-e30f284a6509",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "petr.b.lavrov@gmail.com",
+          "mode": "list",
+          "cachedResultName": "petr.b.lavrov@gmail.com"
+        },
+        "timeMax": "={{ $today.plus({ day: 1 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -7232,
+        -2816
+      ],
+      "id": "d8468d37-b881-47dc-ae8c-f539276c7a89",
+      "name": "Get Petr.b.lavrov events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "tsI9LktaDj0Dpp4H",
+          "name": "Petr.b.lavrov - Calendar"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "accountName",
+              "value": "=petr.b.lavrov",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "accountType",
+              "value": "calendar",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "069e7ed4-852e-4cde-9cec-3fbd11a9f755",
+      "name": "Add Account Info to Calendar 1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -2816
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "accountName",
+              "value": "=petr@superlinear",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "accountType",
+              "value": "calendar",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "e711a919-4840-4506-95d2-273a302bf171",
+      "name": "Add Account Info to Calendar 2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -2624
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "accountName",
+              "value": "=msuorange",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "accountType",
+              "value": "email",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "a3b5e598-5bee-4308-a443-630f01f3a2ae",
+      "name": "Add Account Info to Emails 1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -2432
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "accountName",
+              "value": "=petr.b.lavrov",
+              "type": "string"
+            },
+            {
+              "id": "9d1ed092-1b3a-48d3-93a9-7032f85714fe",
+              "name": "accountType",
+              "value": "email",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "179dc5dc-a999-44bc-8901-eb3e887fab85",
+      "name": "Add Account Info to Emails 2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -2048
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "placeholder",
+              "value": "This node is a placeholder for future integrations like Obsidian todos, Telegram messages, etc. Replace this with actual data sources when ready.",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "items",
+              "value": "[]",
+              "type": "array"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "8f30c436-c1a6-4cfb-8bff-e9d5cdf76f5a",
+      "name": "Placeholder - Other Outstanding Items",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -1280
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "account1Description",
+              "value": "petr.b.lavrov, me@petrlavrov and msuorange are personal accounts",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "account2Description",
+              "value": "petr@superlinear - work account, usually important",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "c8999059-0698-4173-a28b-38b9822d6683",
+      "name": "Account Descriptions",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -1088
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst calendarEvents = [];\nconst emails = [];\nlet otherItems = [];\nlet accountDescriptions = {};\n\nfor (const item of items) {\n  const data = item.json;\n  \n  if (data.accountType === 'calendar') {\n    calendarEvents.push(data);\n  } else if (data.accountType === 'email') {\n    emails.push(data);\n  } else if (data.account1Description || data.account2Description) {\n    accountDescriptions = {\n      account1: data.account1Description,\n      account2: data.account2Description\n    };\n  } else if (data.placeholder) {\n    otherItems = data.items || [];\n  }\n}\n\n// const combinedData = JSON.stringify({\n//   calendar_events: calendarEvents,\n//   emails: emails,\n//   other_items: otherItems,\n//   account_descriptions: accountDescriptions,\n//   summary: {\n//     total_calendar_events: calendarEvents.length,\n//     total_emails: emails.length,\n//     total_other_items: otherItems.length\n//   }\n// }, null, 2);\n\n// return [{ json: { combinedData } }];\n\nreturn [{ calendar_events: calendarEvents,\n  emails: emails,\n  other_items: otherItems,\n  account_descriptions: accountDescriptions,\n  summary: {\n    total_calendar_events: calendarEvents.length,\n    total_emails: emails.length,\n    total_other_items: otherItems.length\n  }\n}];"
+      },
+      "id": "f7bb7ec6-028f-4a3c-aa05-b8fae96b7e84",
+      "name": "Combine All Data for AI",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6496,
+        -1856
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ \nJSON.stringify($json) + \"\\nREMEMBER, FOR DIGEST, One item = one line\"\n}}\n\n",
+        "options": {
+          "systemMessage": "REMEMBER, FOR DIGEST, One item = one line\nYou are a daily digest assistant that creates personalized, prioritized agendas.\n\nYour task is to:\n1. Analyze all calendar events, emails, and other items provided\n2. Form a dynamic agenda that surfaces high-priority and recent items first\n3. Give lower priority to stale or older items - only show them if the agenda would otherwise be empty\n4. Consider the account descriptions to understand context (work vs personal, etc.)\n5. Present the digest in a clear, organized format with:\n   - Today's calendar events with times, attendees, and details\n   - Important emails grouped by account, showing sender, subject, and brief summary\n   - Any other outstanding items that need attention\n   - Smart prioritization based on recency, importance signals (meeting times, email labels, etc.)\n\nDo NOT overwhelm the user. Focus on what matters most today.\n\nOne item = one line"
+        }
+      },
+      "id": "aaed773b-d86d-44c5-89f7-2774131515d7",
+      "name": "AI Agent - Generate Daily Digest",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -6272,
+        3712
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.1",
+          "mode": "list",
+          "cachedResultName": "gpt-5.1"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "e81a5b04-4e77-4d1e-9c22-f94b31fc7ec9",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -6192,
+        3936
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "24nk4sUD64B0PgZV",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "petr@superlinear.com",
+          "mode": "list",
+          "cachedResultName": "petr@superlinear.com"
+        },
+        "timeMax": "={{ $today.plus({ day: 1 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -7232,
+        -2624
+      ],
+      "id": "9e2e416f-3e80-4e78-8494-0999419dfb02",
+      "name": "Get superlinear events",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "0bBkLxTFo5doA1E7",
+          "name": "Superlinear - Google Calendar"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "accountName",
+              "value": "=me@petrlavrov",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "accountType",
+              "value": "email",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "acbb779b-814a-44da-b5e5-0670117d1190",
+      "name": "Add Account Info to Emails ",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -1472
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "labelIds": [
+            "Label_7430420005183066313"
+          ]
+        }
+      },
+      "id": "cf14423c-24fd-42be-a519-a595a3436c34",
+      "name": "Get Emails L1 - msuorange",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -7232,
+        -2432
+      ],
+      "webhookId": "8d3600b2-db8c-4312-85e5-abf97ff5f4ee",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CxdgKuEAhOi8ucc1",
+          "name": "Gmail - msuorange - account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "labelIds": [
+            "Label_6967778459183103387"
+          ]
+        }
+      },
+      "id": "ce955ff0-9cb1-49f9-aec5-2aad6b5e1241",
+      "name": "Get Emails L2 - msuorange",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -7232,
+        -2240
+      ],
+      "webhookId": "46bacaee-99e0-4783-bf87-efa7771fc756",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CxdgKuEAhOi8ucc1",
+          "name": "Gmail - msuorange - account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "labelIds": [
+            "Label_5161893654735686898"
+          ]
+        }
+      },
+      "id": "ec58c3fa-d949-49db-aabc-a453c8f27adc",
+      "name": "Get Emails L1 - petr.b.lavrov",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -7232,
+        -2048
+      ],
+      "webhookId": "3703b856-214d-4d2a-8944-ea19519b5c19",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "mtlB50TQC7rjPrDz",
+          "name": "Gmail - petr.b.lavrov - account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "labelIds": [
+            "Label_7252817414861800502"
+          ]
+        }
+      },
+      "id": "37e52b1a-4c12-440b-b0d5-1a80438f2ba4",
+      "name": "Get Emails L1 - me@petrlavrov",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -7232,
+        -1664
+      ],
+      "webhookId": "8b76e093-314d-458e-a1a4-2863cb6542cb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HPlNc7JfgV7eSqJH",
+          "name": "Gmail me@petrlavrov account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "labelIds": [
+            "Label_872019662288959558"
+          ]
+        }
+      },
+      "id": "2c92cacb-701f-46be-8f01-a74f4bfc02ed",
+      "name": "Get Emails L2 - me@petrlavrov",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -7232,
+        -1472
+      ],
+      "webhookId": "93e27749-248b-49c7-8e5d-7d7301e0fb2f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HPlNc7JfgV7eSqJH",
+          "name": "Gmail me@petrlavrov account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "labelIds": [
+            "Label_8733334958722745291"
+          ],
+          "receivedAfter": "2025-10-01T00:00:00"
+        }
+      },
+      "id": "5bf2bb11-9f31-4a36-913c-65513813a53e",
+      "name": "Get Emails L2 - petr.b.lavrov",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -7232,
+        -1856
+      ],
+      "webhookId": "060a6e7d-f8cb-4668-a48a-f52edacfd19d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "mtlB50TQC7rjPrDz",
+          "name": "Gmail - petr.b.lavrov - account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "accountName",
+              "value": "=msuorange",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "accountType",
+              "value": "email",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "46975d95-c4d8-421b-9d0f-6c613b888b3d",
+      "name": "Add Account Info to Emails 3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -2240
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "accountName",
+              "value": "=petr.b.lavrov",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "accountType",
+              "value": "email",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "a7976b3a-f669-4b61-a5d3-ef6b418eb1bd",
+      "name": "Add Account Info to Emails 4",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -1856
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "accountName",
+              "value": "=me@petrlavrov",
+              "type": "string"
+            },
+            {
+              "id": "id-2",
+              "name": "accountType",
+              "value": "email",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "5d584806-1b21-41ce-9d8a-ca89014f5665",
+      "name": "Add Account Info to Emails 5",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -6944,
+        -1664
+      ]
+    },
+    {
+      "parameters": {
+        "numberInputs": 10
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -6720,
+        -1984
+      ],
+      "id": "0335e5ae-3f4c-4cc5-a708-79aa499d569b",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-pro-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-pro-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a daily digest assistant that creates personalized, prioritized agendas.  Your task is to: 1. Analyze all calendar events, emails, and other items provided 2. Form a dynamic agenda that surfaces high-priority and recent items first 3. Give lower priority to stale or older items - only show them if the agenda would otherwise be empty 4. Consider the account descriptions to understand context (work vs personal, etc.) 5. Present the digest in a clear, organized format with:    - Today's calendar events with times, attendees, and details    - Important emails grouped by account, showing sender, subject, and brief summary    - Any other outstanding items that need attention    - Smart prioritization based on recency, importance signals (meeting times, email labels, etc.)  Do NOT overwhelm the user. Focus on what matters most today. REMEMBER, FOR DIGEST, One item = one line. NO FORMATTING. NO TITLES. NO FLUFF.\nGroup items by type / topic\n- Add simple bullet points for each line",
+              "role": "model"
+            },
+            {
+              "content": "={{ JSON.stringify($json) }}\nREMEMBER, FOR DIGEST, One item = one line. Pay attention if meetings are accepted or not\n\nExample: \n\"\"\"\nMeetings\n- Meeting 1\n- Meeting 2\nEmails\n- Email 1\n- Email 2\n\"\"\"\nMaximum 3 emails"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -6272,
+        -1856
+      ],
+      "id": "d9e7b66b-1074-4dd5-926c-79a77348adea",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "iedTxhHkSFT2NXpq",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6a378ed0-2ac9-451d-aa0b-9d47e5bc7123",
+              "name": "target_chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -7184,
+        1152
+      ],
+      "id": "ad93e821-9292-46cc-ac77-47023babc799",
+      "name": "Set target chat id - message.chat.id"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bd6c006b-1165-41ed-899a-f51ad1d9c8fa",
+              "name": "target_chat_id",
+              "value": "={{ $json.callback_data.chat.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -7184,
+        720
+      ],
+      "id": "71cdda7d-1594-47a7-a258-9d908e430753",
+      "name": "Set target chat id - callback_data.chat.id"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "='{{ $json.googleDriveFolderId }}' in parents",
+        "returnAll": true,
+        "filter": {},
+        "options": {}
+      },
+      "id": "cfaf0592-25fd-45a1-938e-8be9f61f743a",
+      "name": "List Videos in Folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -6960,
+        720
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AxotrXnfSlaLQo2z",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-3",
+              "name": "telegramUserId",
+              "value": 291560340,
+              "type": "number"
+            },
+            {
+              "id": "id-4",
+              "name": "googleDriveFolderId",
+              "value": "1LUE5R674ZeQi3WSwCpZ3da6VCrIvQuPG",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "46328be3-2aaf-4349-adb4-871191dec811",
+      "name": "Workflow Configuration Telegram",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -7856,
+        448
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "telegramUserId",
+              "value": 291560340,
+              "type": "number"
+            },
+            {
+              "id": "id-2",
+              "name": "googleDriveFolderId",
+              "value": "1LUE5R674ZeQi3WSwCpZ3da6VCrIvQuPG",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "4c0129e4-94d4-4f5e-a82b-db142cd197b1",
+      "name": "Workflow Configuration Daily",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -7744,
+        -2048
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "user-check",
+              "leftValue": "={{ $json.callback_query.from.id }}",
+              "rightValue": "={{ $('Workflow Configuration Telegram').first().json.telegramUserId }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "847e2e4c-9572-4c00-8386-7e70542a5bc2",
+              "leftValue": "={{ $json.callback_query.message.chat.id }}",
+              "rightValue": "={{ $('Workflow Configuration Telegram').first().json.telegramUserId }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "661d9312-34d4-485e-b60c-893eeb2c7bc2",
+      "name": "Check Allowed User - Callback",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -7408,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "user-check",
+              "leftValue": "={{ $json.message.from.id }}",
+              "rightValue": "={{ $('Workflow Configuration Telegram').first().json.telegramUserId }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "1aa8f715-7fde-4d52-8f15-e5a56f9341c3",
+              "leftValue": "={{ $json.message.chat.id }}",
+              "rightValue": "={{ $('Workflow Configuration Telegram').first().json.telegramUserId }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "1a6375bc-3155-4f90-8c42-8f9b2b54ff36",
+      "name": "Check Allowed User - Message",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -7408,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "sendVideo",
+        "chatId": "={{ $json.target_chat_id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "id": "5f8495b1-c659-41b1-b28c-f772a79f1475",
+      "name": "Send Pre-generated Random Video Response",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -6160,
+        768
+      ],
+      "webhookId": "7deb92ed-b840-4e91-a90f-226b2f0f889c",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "id": "304c1202-f37f-4ed0-99fe-09fb0af45de8",
+      "name": "Download Video from Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -6384,
+        768
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AxotrXnfSlaLQo2z",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all items from the input\nconst items = $input.all();\n\n// Check if there are any items\nif (items.length === 0) {\n  throw new Error('No videos found in the input');\n}\n\n// Select a random item\nconst randomIndex = Math.floor(Math.random() * items.length);\nconst randomVideo = items[randomIndex];\n\n// Return the selected video\nreturn [randomVideo];"
+      },
+      "id": "59e42a47-da8a-4666-9733-a37479e44bee",
+      "name": "Select Random Video",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6672,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "searchMethod": "query",
+        "queryString": "='{{ $json.googleDriveFolderId }}' in parents",
+        "returnAll": true,
+        "filter": {},
+        "options": {}
+      },
+      "id": "eb1d30a1-30c8-47a5-91c9-ed33038d3639",
+      "name": "List Videos in Folder1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -6256,
+        -752
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AxotrXnfSlaLQo2z",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Select Random Video1').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "id": "a6aa59df-655f-46bc-9051-10f8cadf54c4",
+      "name": "Download Video from Google Drive1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -5184,
+        -768
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AxotrXnfSlaLQo2z",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all items from the input\nconst items = $input.all();\n\n// Check if there are any items\nif (items.length === 0) {\n  throw new Error('No videos found in the input');\n}\n\n// Select a random item\nconst randomIndex = Math.floor(Math.random() * items.length);\nconst randomVideo = items[randomIndex];\n\n// Return the selected video\nreturn [randomVideo];"
+      },
+      "id": "0e9d1fc4-783d-4e39-8f15-cac8123f116f",
+      "name": "Select Random Video1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5840,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const candidates = `\n- Daria, Anna, ❤️ (aka Love)\n- Meditation (aka Rest)\n- Yoga, Sport, Mountains (aka Health)\n- EF (aka Друзья)\n- 146 (aka Благотворительность)\n- Work (aka Work)\n- Personal Projects - GPT, automations, blog, art etc. - все что прогается и полезно или вдохновляет (aka Hobby)\nSimple principle. Do this. What doesn't fit - don't do.\n- EF (https://www.notion.so/engineering-friends/2024-3448251855294a7599ff88bd57f2b319?pvs=4)\n- Love\n- Rest\n- Friends\n- Health\n- Give\n- Hobby\n- Work\n`.trim().split('\\n').filter(line => line.length > 0);\n\nconst items = $input.all();\n\nfor (const item of items) {\n  const randomIndex = Math.floor(Math.random() * candidates.length);\n  item.json.TodayLifeGoalReminder = candidates[randomIndex];\n}\n\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5920,
+        -1856
+      ],
+      "id": "7100cb8f-3edf-457a-8cb0-633376bf9256",
+      "name": "Random Life Value"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "2c7bc5d57f7c80cd8a8bff53c808dacd",
+          "mode": "id"
+        },
+        "title": "={{ $json.goal }}",
+        "simple": false,
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Date|date",
+              "type": "date",
+              "date": "={{ $today }}"
+            },
+            {
+              "key": "Results|rich_text",
+              "type": "rich_text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8fdbbf7b-b023-4dce-93e9-9716694f2d3e",
+      "name": "Save Goal to Notion Database",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -5936,
+        448
+      ],
+      "credentials": {
+        "notionApi": {
+          "id": "vvHzoTtN28F74myZ",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -6176,
+        448
+      ],
+      "id": "9a37dc78-7412-4798-a579-dae630f2754f",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "content": "## Todo: Save multi-line goal as Description\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -6256,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "87467616-3068-4957-8699-131fb6b1aab8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Workflow Configuration Daily').first().json.telegramUserId }}",
+        "text": "=Daily Value:\n{{ $json.TodayLifeGoalReminder }} \n\nMorning exercis:\nhttps://www.fitnessblender.com/my/dashboard  \n\nAgenda for today:\n{{ $json.content.parts[0].text }}\n\nTable with Goals:\nhttps://www.notion.so/Daily-Goals-Tracker-2c7bc5d57f7c80e19df9d26d12b764d2",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -5696,
+        -1856
+      ],
+      "id": "6360ee36-413d-4b77-adb6-22427b7d1ecb",
+      "name": "send daily Summary",
+      "webhookId": "645aa49e-ef96-434d-8c69-24cb6b630bfa",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Todo: Find a way to use \"telegramUserId\"\nfrom Daily or Telegram config\n"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5200,
+        -496
+      ],
+      "typeVersion": 1,
+      "id": "8a5f6ed4-ea5b-4f8e-ae84-bd25a192b4b7",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -7520,
+        -2000
+      ],
+      "id": "a9576bb8-f00e-48bf-9432-6b5b5f221023",
+      "name": "Daily Digest - Start"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -6944,
+        -800
+      ],
+      "id": "38a81594-abec-4bf4-ac4d-8b5fe034c3f6",
+      "name": "Daily Sunrise - Start"
+    },
+    {
+      "parameters": {
+        "operation": "sendVideo",
+        "chatId": "-1003658373879",
+        "binaryData": true,
+        "additionalFields": {
+          "caption": "=Sunrise {{$today.format('DDD')}}",
+          "height": "={{ $json.Height }}",
+          "width": "={{ $json.Width }}"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -4224,
+        -1024
+      ],
+      "id": "c11d5b19-dd23-42da-aa7f-7ceda1741e16",
+      "name": "Post to Daily Sunrise channel",
+      "webhookId": "b46bc539-d061-4cec-a41d-8f2cd3f31e59",
+      "credentials": {
+        "telegramApi": {
+          "id": "XXLsLJASe9hrdqwK",
+          "name": "Telegram - Calmmage n8n Automation Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5abc71a9-755e-4cb5-b2ed-cd39f0f1a527",
+              "name": "Width",
+              "value": 720,
+              "type": "number"
+            },
+            {
+              "id": "03ba14f4-f4cb-4233-8ead-524f42ef64c3",
+              "name": "Height",
+              "value": 1280,
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5248,
+        -944
+      ],
+      "id": "149df8e8-f157-4a79-a19e-3dd8cddbfb8d",
+      "name": "Set Aspect Ratio"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ICmP4z1He7w-_Pg3_6NHY7OIlVHb3diIgvlWZntTskA",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ICmP4z1He7w-_Pg3_6NHY7OIlVHb3diIgvlWZntTskA/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "FileId",
+              "lookupValue": "={{ $('Select Random Video1').item.json.id }}"
+            }
+          ]
+        },
+        "options": {
+          "outputFormatting": {
+            "values": {
+              "general": "UNFORMATTED_VALUE",
+              "date": "FORMATTED_STRING"
+            }
+          },
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -5632,
+        -752
+      ],
+      "id": "cb6cd8c5-33af-46ed-8912-92f226e3ce4e",
+      "name": "Get Aspect Ratio",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kOLlvw1cspFJeDdm",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5abc71a9-755e-4cb5-b2ed-cd39f0f1a527",
+              "name": "=Width",
+              "value": "={{ $json.Width ?? 1280 }}",
+              "type": "number"
+            },
+            {
+              "id": "03ba14f4-f4cb-4233-8ead-524f42ef64c3",
+              "name": "Height",
+              "value": "={{ $json.Height ?? 720 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5440,
+        -752
+      ],
+      "id": "62161428-890d-4ed2-9344-514ae9d482cb",
+      "name": "Set Aspect Ratio - Backup on Error"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zsn4G3nbdbElGd8zFFEemH8ai7Nez8frvD5FVO4GXd8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zsn4G3nbdbElGd8zFFEemH8ai7Nez8frvD5FVO4GXd8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Type": "Complete prompt",
+            "Prompt": "={{ $json['output[0].content[0].text.ideas'] }}",
+            "Date": "={{ $today.format('yyyy-MM-dd') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Prompt",
+              "displayName": "Prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -5696,
+        -1424
+      ],
+      "id": "e901dbc6-b52e-4e36-98ea-e6f63f47485e",
+      "name": "Add ideas to Google Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kOLlvw1cspFJeDdm",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output[0].content[0].text.ideas",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -5888,
+        -1424
+      ],
+      "id": "111ae91b-c341-4759-9299-f21d751005d3",
+      "name": "Split Out"
+    }
+  ],
+  "pinData": {
+    "Generate Video Prompt": [
+      {
+        "json": {
+          "output": [
+            {
+              "id": "msg_0b6bb8504a7b1d350069415cacc9ac819fb31959c86f371ea9",
+              "type": "message",
+              "status": "completed",
+              "content": [
+                {
+                  "type": "output_text",
+                  "annotations": [],
+                  "logprobs": [],
+                  "text": {
+                    "ideas": [
+                      "Cinematic sunrise from inside a dimly lit mountain cave, camera placed deep in the shadows looking outward through a jagged, irregular cave mouth. The foreground is almost silhouette—rough stone texture, scattered pebbles, a faint glint of moisture on stalactites—while the outside world slowly brightens. A vast valley and distant snow-capped peaks are framed by the cave opening. The sky transitions from deep indigo to soft violet, then erupts into a golden-pink sunrise that streams rays into the cave, gradually revealing the detailed rock textures and faint dust motes floating in the air. High dynamic range, realistic atmospheric haze, slow timelapse from night to full morning light.",
+                      "Sunrise from a dark, cluttered artist’s loft, camera positioned deep in the interior. The foreground is moody and underexposed: paint-splattered floor, canvases stacked in shadow, a single chair, faint reflections on glass jars. A large industrial window at the far end dominates the composition, its metal grid silhouette framing a distant city skyline and a harbor. As the sun rises, golden light pours through, catching dust particles midair and gradually illuminating colorful paintings and details in the room. The transition emphasizes the shift from cool, bluish pre-dawn tones to warm, saturated sunrise hues. Ultra-realistic, soft lens flare, slow push-in toward the window.",
+                      "Timelapse sunrise viewed from inside a dark, abandoned train carriage. The camera is placed in the middle aisle, low to the ground, with torn seats and hanging fabric in silhouette. The only light source is the large, dirty window at the end of the carriage, showing distant fields and rolling hills. Outside, the sky progresses from starry night to pastel pre-dawn, then bursts into a glowing orange sunrise. Light gradually enters the carriage, reflecting off metal bars and revealing details like dust, graffiti, and peeling paint. Strong contrast between the eerie, forgotten interior and the hopeful, radiant landscape outside. Cinematic, 4K, rich textures, subtle camera shake as if the train is gently rocking.",
+                      "Sunrise in a high-rise megacity, viewed from a nearly dark penthouse interior. The camera faces a floor-to-ceiling glass wall, with thick curtains half-drawn, leaving a narrow vertical gap. The room is mostly in silhouette: the outline of a couch, a coffee table, and an unlit laptop. Through the gap, a dense futuristic skyline with reflective skyscrapers stretches into the distance. Timelapse: the neon glow of night slowly fades, lights in buildings blink off, and the sky shifts from deep blue to radiant gold. The first sunlight slices through the gap, casting a sharp beam across the floor, gradually widening as the curtains move in a slow, subtle breeze. Hyperreal reflections in the glass, soft sun flares, moody yet uplifting.",
+                      "A sunrise over the ocean seen from the dark interior of a wooden beach hut on stilts. The camera is positioned inside the hut, low and back in the shadows, with the bright rectangular doorway framing the horizon. Inside, fishing nets, ropes, and old wooden crates are barely visible in the gloom. Outside, the ocean is initially a deep navy blue with faint moonlight reflections, then transitions into burning gold and copper as the sun breaks the horizon. The first rays pierce into the hut, catching suspended dust and revealing the rich grain of the wooden walls. Gentle waves, slight camera dolly forward from darkness toward the glowing doorway, highly realistic water and sky simulation.",
+                      "Sunrise above a sea of clouds as viewed from a dark cliffside tent. The inside of the tent is almost pitch black: only faint outlines of a sleeping bag and a backpack. The camera looks outward through the slightly unzipped tent flap, its fabric edges framing the view. Beyond, an ocean of clouds stretches to the horizon, with the shadowed outline of distant mountain peaks. The sky transitions from star-filled black to deep blue, then to a breathtaking pink-and-gold sunrise that lights the cloud tops like molten cotton. As the light grows, the interior of the tent gradually becomes visible, colors rich and saturated. Subtle camera breathing, lens condensation clearing, ultra-realistic, inspiring and peaceful.",
+                      "Sunrise from the interior of a dark lighthouse stairwell. The camera sits midway up a spiral of cast-iron steps, in heavy shadow, looking up toward the circular glass lantern room above. Initially, the only light is a faint pre-dawn glow from the top windows, casting faint spiral-shaped shadows on the brick walls. As time passes, the sun rises over a stormy sea visible through the lantern room glass, flooding warm golden light down the spiral, step by step. The contrast between cool, bluish-black interior shadows and incoming golden light creates a dramatic chiaroscuro effect. Dust in the air, slight lens flare from the glass, timelapse from near-blackness to radiant illumination.",
+                      "Sunrise in a dense forest, viewed from inside a hollow tree trunk. The camera is inside the trunk, with the interior almost completely dark—rough bark texture, faint spiderwebs, tiny bits of moss catching minimal light. The trunk has a narrow opening that frames the forest outside. Through this organic frame, the viewer sees tall trees, mist hanging low, and the sky slowly brightening. As the sun rises, beams of light pierce the forest canopy, creating volumetric rays that gradually penetrate the hollow, illuminating the interior surfaces with warm light and revealing miniature details: beetles, moss, and damp wood. Macro-level realism, gentle camera motion, magical yet photoreal.",
+                      "Sunrise seen from the dark backstage of an open-air amphitheater. The camera is placed in the shadows behind heavy stage curtains, with ropes, rigging, and scattered equipment barely visible in the low light. Through a gap between the curtains, the wide stone seating area and distant horizon are visible. The sky transitions from deep twilight to burning orange as the sun rises directly over the amphitheater, casting long shadows across the seats. Light creeps into the backstage area, revealing rich textures in the curtain fabric and polished wood of stage props. Subtle dust motes, cinematic bloom, contrast between hidden, cluttered darkness and expansive, hopeful open air beyond.",
+                      "Sunrise over a desert seen from inside a dark, partially buried car. The camera is placed in the backseat, looking past the silhouette of front seats toward a cracked windshield. The interior is mostly black: faint outlines of a steering wheel, hanging air freshener, and patchy upholstery. Outside the windshield, sand dunes roll into the distance under a starry, pre-dawn sky. Over time, the sky turns purple, then orange, and the sun emerges over the dunes, its light refracting through cracks in the glass, scattering patterns onto the dashboard. The car interior slowly emerges from the shadows, revealing dust, faded colors, and small personal items. High contrast, hyperreal textures, melancholic yet hopeful tone.",
+                      "Sunrise in a futuristic underwater research station, viewed from a dark observation room. Inside, the room is almost entirely in shadow: the silhouettes of consoles, chairs, and cables. The camera faces a massive panoramic window, beyond which the dark blue ocean gradually lightens as the sun rises above the surface. At first, bioluminescent sea creatures drift in the black water, then their glow fades as natural light filters down in ethereal rays. The surface shimmer is visible far above, and the station interior slowly fills with a soft, filtered turquoise-golden glow. Highly realistic caustics, volumetric lighting, subtle reflections on the glass, strong sense of awe and discovery.",
+                      "Sunrise seen from within a dark, minimalist meditation room in a mountaintop monastery. The camera is positioned far back, showing a nearly black foreground: simple cushions, a low wooden bench, and a single incense burner with a thin trail of smoke barely visible. A large square opening in the wall frames a distant mountain range and sky. Over a timelapse, the stars fade, the horizon glows, and the first beam of sunlight enters, cutting through incense smoke and forming a bright path across the stone floor. The room gradually brightens with soft, warm light, revealing the subtle textures of the stone and wood. Calm, highly realistic, emphasizing serenity and transformation from darkness to enlightenment.",
+                      "Sunrise from the interior of a dark spacecraft cockpit orbiting a planet. The camera is placed behind the pilot’s empty, silhouetted seat, with instrument panels dim, only a few soft indicator lights visible. In front, a large viewing window frames the curved limb of the planet, mostly in shadow. As the spacecraft moves, the sun appears from behind the planet, creating an intense, glowing halo that blossoms into a vivid sunrise over the planet’s atmosphere—blues, purples, and golds layered in a thin luminous band. The cockpit gradually fills with reflected golden and blue light, flickering off metallic surfaces and illuminating detailed controls. High contrast, ultra-wide cinematic view, sense of hope and exploration.",
+                      "Sunrise in a rainy city, viewed from inside a dark, narrow alleyway. The camera is deep in the alley shadows, with brick walls on both sides and puddles on the ground reflecting faint streetlamp glows. Far at the alley’s end, a slice of horizon is visible between tall buildings. Through timelapse, the wet cobblestones and puddles gradually catch the evolving colors of the sky as it transitions from dark blue to rose gold. The first sunlight hits the tops of skyscrapers, slowly descending until it finally reaches into the alley, igniting reflections in the puddles and revealing graffiti, pipes, and textures on the walls. Realistic rain remnants, reflective surfaces, gritty yet uplifting urban mood.",
+                      "Sunrise from deep inside a dark canyon, camera positioned at ground level in the shadowed canyon floor. Towering rock walls rise on either side, mostly in silhouette, with only a narrow strip of sky visible overhead. At first, only stars and a faint milky way can be seen. Over timelapse, the sky brightens, then the canyon rim catches the first orange light. The sun’s rays gradually descend the rock faces, revealing rich red and brown mineral textures, patches of vegetation, and a small stream at the bottom. As the light reaches the camera, water sparkles and insects awaken, the sound design suggesting life returning with the day. Ultra-realistic, emphasizing vertical contrast between dark depth and radiant sky.",
+                      "Sunrise over a vast frozen lake, seen from inside a dark, rustic log cabin. The camera sits back from a window, the interior mostly in shadow: rough wooden beams, an unlit fireplace, scattered firewood. The window frames a snow-covered landscape and the frozen lake stretching to the horizon. Initially, everything outside is tinted deep blue with pre-dawn light. As the sun rises, the ice reflects vivid oranges and pinks, and the first beams of light stream into the cabin, causing frost on the window edges to sparkle and slowly melt. The interior gradually warms in color and brightness, revealing cozy details: a blanket, a mug, a lantern. Crisp, clean atmosphere, photoreal textures, strong sense of warmth emerging from cold and dark."
+                    ]
+                  }
+                }
+              ],
+              "role": "assistant"
+            }
+          ]
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration Daily",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Video Prompt": {
+      "main": [
+        [
+          {
+            "node": "Random Prompt Picker",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Random Prompt Picker": {
+      "main": [
+        [
+          {
+            "node": "Generate a video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Buttons Router": {
+      "main": [
+        [
+          {
+            "node": "Daily Sunrise - Start",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Priority Menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priority Router": {
+      "main": [
+        [
+          {
+            "node": "Ask Listen Goal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask Work Goal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask Sleep Goal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Show Health Options",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Flow Goal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Health Router": {
+      "main": [
+        [
+          {
+            "node": "Set Health Goal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Health Goal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Health Goal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Health Goal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Health Goal": {
+      "main": [
+        [
+          {
+            "node": "Save Text Goal to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Flow Goal": {
+      "main": [
+        [
+          {
+            "node": "Save Text Goal to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate a video": {
+      "main": [
+        [
+          {
+            "node": "Upload to Google Drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set Aspect Ratio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "List Videos in Folder1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Goal from Text": {
+      "main": [
+        [
+          {
+            "node": "Save Text Goal to Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Text Goal to Sheets": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Sleep Goal": {
+      "main": [
+        [
+          {
+            "node": "Set Sleep Goal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start command": {
+      "main": [
+        [
+          {
+            "node": "Daily Sunrise - Start",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Goal from Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Check Allowed User - Callback",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Allowed User - Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Sleep Goal": {
+      "main": [
+        []
+      ]
+    },
+    "If random 50/50": {
+      "main": [
+        [
+          {
+            "node": "Generate Video Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Random Setting Picker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Video Prompt - Plane": {
+      "main": [
+        [
+          {
+            "node": "Random Item Picker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Random Setting Picker": {
+      "main": [
+        [
+          {
+            "node": "Generate Video Prompt - Plane",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Random Item Picker": {
+      "main": [
+        [
+          {
+            "node": "Generate a video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Workflow Configuration Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Account Info to Calendar 1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "Add Account Info to Calendar 2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Add Account Info to Emails 1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Account Info to Emails 2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Placeholder - Other Outstanding Items": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "Account Descriptions": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 9
+          }
+        ]
+      ]
+    },
+    "Combine All Data for AI": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Generate Daily Digest",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Generate Daily Digest": {
+      "main": [
+        []
+      ]
+    },
+    "Get Petr.b.lavrov events": {
+      "main": [
+        [
+          {
+            "node": "Add Account Info to Calendar 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get superlinear events": {
+      "main": [
+        [
+          {
+            "node": "Add Account Info to Calendar 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Account Info to Emails ": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Get Emails L1 - msuorange": {
+      "main": [
+        [
+          {
+            "node": "Add Account Info to Emails 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Emails L2 - msuorange": {
+      "main": [
+        [
+          {
+            "node": "Add Account Info to Emails 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Emails L1 - petr.b.lavrov": {
+      "main": [
+        [
+          {
+            "node": "Add Account Info to Emails 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Emails L1 - me@petrlavrov": {
+      "main": [
+        [
+          {
+            "node": "Add Account Info to Emails 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Emails L2 - me@petrlavrov": {
+      "main": [
+        [
+          {
+            "node": "Add Account Info to Emails ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Emails L2 - petr.b.lavrov": {
+      "main": [
+        [
+          {
+            "node": "Add Account Info to Emails 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Account Info to Emails 3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Add Account Info to Emails 4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Add Account Info to Emails 5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Combine All Data for AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Random Life Value",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set target chat id - message.chat.id": {
+      "main": [
+        [
+          {
+            "node": "List Videos in Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set target chat id - callback_data.chat.id": {
+      "main": [
+        [
+          {
+            "node": "List Videos in Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Videos in Folder": {
+      "main": [
+        [
+          {
+            "node": "Select Random Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration Telegram": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workflow Configuration Daily": {
+      "main": [
+        [
+          {
+            "node": "Daily Digest - Start",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Daily Sunrise - Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Allowed User - Callback": {
+      "main": [
+        [
+          {
+            "node": "Video Buttons Router",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Priority Router",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Health Router",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set target chat id - callback_data.chat.id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Allowed User - Message": {
+      "main": [
+        [
+          {
+            "node": "Start command",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set target chat id - message.chat.id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video from Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Send Pre-generated Random Video Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Random Video": {
+      "main": [
+        [
+          {
+            "node": "Download Video from Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Videos in Folder1": {
+      "main": [
+        [
+          {
+            "node": "Select Random Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Random Video1": {
+      "main": [
+        [
+          {
+            "node": "Get Aspect Ratio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video from Google Drive1": {
+      "main": [
+        [
+          {
+            "node": "Post to Daily Sunrise channel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Video to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Random Life Value": {
+      "main": [
+        [
+          {
+            "node": "send daily Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Goal to Notion Database": {
+      "main": [
+        [
+          {
+            "node": "Confirm Text Goal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing2": {
+      "main": [
+        [
+          {
+            "node": "Save Goal to Notion Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "send daily Summary": {
+      "main": [
+        []
+      ]
+    },
+    "Daily Digest - Start": {
+      "main": [
+        [
+          {
+            "node": "Get Petr.b.lavrov events",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Emails L1 - msuorange",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Emails L1 - petr.b.lavrov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Placeholder - Other Outstanding Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Account Descriptions",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get superlinear events",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Emails L1 - me@petrlavrov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Emails L2 - msuorange",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Emails L2 - petr.b.lavrov",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Emails L2 - me@petrlavrov",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Sunrise - Start": {
+      "main": [
+        [
+          {
+            "node": "If random 50/50",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Aspect Ratio": {
+      "main": [
+        [
+          {
+            "node": "Post to Daily Sunrise channel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Video to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Aspect Ratio": {
+      "main": [
+        [
+          {
+            "node": "Set Aspect Ratio - Backup on Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Set Aspect Ratio - Backup on Error": {
+      "main": [
+        [
+          {
+            "node": "Download Video from Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Add ideas to Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4d80b45d-fc36-4436-bbe2-be77ce6d2fec",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "956788c649ef19bf6beb9439f5ba75a6702ed157baab46ca5c3da1344a33fc5e"
+  },
+  "id": "9X3EaiZ8FfjDe4yk",
+  "tags": []
+}
