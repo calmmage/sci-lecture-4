@@ -1,3 +1,13 @@
+---
+marp: true
+theme: default
+class: invert
+paginate: true
+header: 'Swiss Cyber Institute'
+footer: '2025'
+---
+
+<!-- _class: lead -->
 # LLM APIs for Nocode AI Agents
 ## n8n + OpenAI Integration
 ### Swiss Cyber Institute
@@ -5,7 +15,7 @@
 
 ---
 
-<!-- .slide: data-background="#1d1d1d" -->
+<!-- _class: lead invert -->
 # AGENDA
 
 | | |
@@ -16,7 +26,7 @@
 
 ---
 
-<!-- .slide: data-background="#1d1d1d" class="section-header" -->
+<!-- _class: lead invert -->
 # 02
 ## TRIGGERS
 ### What Starts Your Workflow
@@ -108,7 +118,7 @@
 
 ---
 
-<!-- .slide: data-background="#1d1d1d" class="section-header" -->
+<!-- _class: lead invert -->
 # 03
 ## CHAT API
 ### How LLMs Process Text
@@ -203,7 +213,7 @@ For each email, return:
 
 ---
 
-<!-- .slide: data-background="#1d1d1d" class="section-header" -->
+<!-- _class: lead invert -->
 # 04
 ## DATA SOURCES
 ### Google Workspace Integration
@@ -307,7 +317,7 @@ Prep needed for 3pm client call
 
 ---
 
-<!-- .slide: data-background="#1d1d1d" class="section-header" -->
+<!-- _class: lead invert -->
 # 05
 ## PROVIDERS
 ### Choosing Your LLM
@@ -330,7 +340,7 @@ Prep needed for 3pm client call
 
 - Guaranteed format, no parsing errors
 - Type validation across providers
-- Tip: Limit to 3 tasks max
+- TIP: Limit to 3 tasks max
 
 ---
 
@@ -381,11 +391,11 @@ Prep needed for 3pm client call
 ---
 
 ## BUILD → Email Tasks to Calendar
- **Structured output is key** – without it, you can't reliably parse task properties
+**Structured output is key** – without it, you can't reliably parse task properties
 
 ---
 
-<!-- .slide: data-background="#1d1d1d" class="section-header" -->
+<!-- _class: lead invert -->
 # 06
 ## MODALITIES
 ### Beyond Text: Image, Video, Audio
@@ -407,9 +417,9 @@ Prep needed for 3pm client call
 ## Current SOTA Models (2025)
 
 - Text: GPT-5.2, Claude 4.5, Gemini 3
-- Image Generation: Gemini Image 3 (aka Nano Banana Pro), Midjourney
-- Video generation: Sora, Veo, Runway
-- Audio Agents: Whisper, GPT-4o voice, Elevenlabs
+- Images: Nano Banana
+- Video: Sora, Veo
+- Audio: Whisper, GPT-4o voice
 
 ---
 
@@ -431,7 +441,7 @@ Prep needed for 3pm client call
 ## Current SOTA Models (2025)
 **AUDIO:** Whisper (transcription), GPT-4o voice mode
 
- *This changes fast. Check provider docs.*
+*This changes fast. Check provider docs.*
 
 ---
 
@@ -460,7 +470,7 @@ Prep needed for 3pm client call
 
 ---
 
-<!-- .slide: data-background="#1d1d1d" class="section-header" -->
+<!-- _class: lead invert -->
 # 07
 ## TIPS & PRACTICE
 ### Building Better Workflows
@@ -565,14 +575,14 @@ return [random];
 - Voice memo → transcribe → summarize → email
 - Screenshot → extract text → create ticket
 
- **Your turn: What would YOU automate?**
+**Your turn: What would YOU automate?**
 
 ---
 
-<!-- .slide: data-background="#1d1d1d" -->
+<!-- _class: lead invert -->
 # Questions?
 
- **Resources:**
+**Resources:**
 - n8n Docs: `docs.n8n.io`
 - OpenAI API: `platform.openai.com`
 - Chat Trigger: `docs.n8n.io/.../chattrigger`
